@@ -1,6 +1,6 @@
 {
   "name": "rehype-mdx-import-media",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "An MDX rehype plugin for turning media paths into imports.",
   "type": "module",
   "exports": "./dist/rehype-mdx-import-media.js",
