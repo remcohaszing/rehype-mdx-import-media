@@ -43,11 +43,11 @@
     "eslint-config-remcohaszing": "^10.0.0",
     "eslint-plugin-jsx-a11y": "^6.0.0",
     "eslint-plugin-react": "^7.0.0",
+    "prettier": "^3.0.0",
     "rehype-raw": "^7.0.0",
     "remark-cli": "^11.0.0",
     "remark-preset-remcohaszing": "^2.0.0",
-    "prettier": "^3.0.0",
-    "to-vfile": "^8.0.0",
+    "snapshot-fixtures": "^1.0.0",
     "typescript": "^5.0.0"
   }
 }
