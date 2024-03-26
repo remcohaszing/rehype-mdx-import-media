@@ -197,7 +197,7 @@ const rehypeMdxImportMedia: Plugin<[RehypeMdxImportMediaOptions?], Root> = ({
 
       if (shouldReplace) {
         parent!.children[index!] = {
-          type: 'mdxJsxFlowElement',
+          type: 'mdxJsxTextElement',
           name: node.tagName,
           attributes: replacements,
           children: node.children,
