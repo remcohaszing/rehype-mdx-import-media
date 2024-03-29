@@ -11,7 +11,9 @@ paths into imports.
 ## Table of Contents
 
 - [Installation](#installation)
+- [When should I use this?](#when-should-i-use-this)
 - [Usage](#usage)
+- [Example](#example)
 - [API](#api)
   - [Options](#options)
 - [Compatibility](#compatibility)
@@ -22,6 +24,21 @@ paths into imports.
 ```sh
 npm install rehype-mdx-import-media
 ```
+
+## When should I use this?
+
+You may want to author images in MDX using the markdown format, like so:
+
+```markdown
+![alt](./image.png 'title')
+```
+
+You may use MDX with a bundler such as [Webpack](https://webpack.js.org) or
+[Vite](http://vitejs.dev). By default bundlers don’t understand how to resolve those images. They
+only understand how to resolve imports. This plugin solves that problem.
+
+Also you may use MDX to load markdown files. If you reference other media in those markdown files
+using HTML tags, that media can be resolved by this plugin too.
 
 ## Usage
 
@@ -41,7 +58,9 @@ nodes into an
 This may prevent other rehype plugins from further processing. To avoid this, put
 `rehype-mdx-import-media` after any other rehype plugins
 
-For example, given a file named `example.mdx` with the following contents:
+## Example
+
+Let’s say we have a file named `example.mdx` with the following contents:
 
 ```mdx
 ![](./image.png)
