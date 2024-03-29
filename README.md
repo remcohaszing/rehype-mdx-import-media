@@ -115,9 +115,10 @@ The default export is a [rehype](https://github.com/rehypejs/rehype) plugin.
 - `elementAttributeNameCase` (`'html' | 'react'`): The casing to use for attribute names. This
   should match the elementAttributeNameCase value passed to MDX. (Default: `'react'`)
 - `resolve` (`boolean`): By default imports are resolved relative to the markdown file. This matches
-  default markdown behaviour. If this is set to false, this behaviour is removed and URLs are no
-  longer processed. This allows to import images from `node_modules`. If this is disabled, local
-  images can still be imported by prepending the path with `./.`. (Default: `true`).
+  behaviour of places that render the markdown, such as GitHub. If this is set to false, this
+  behaviour is removed and URLs are no longer processed. This allows to import images from
+  `node_modules`. If this is disabled, local images can still be imported by prepending the path
+  with `./.`. (Default: `true`).
 
 ## Compatibility
 
