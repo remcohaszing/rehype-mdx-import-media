@@ -37,7 +37,7 @@ elements are **not** HTML elements, so they are not processed. HTML elements can
 If this plugin finds an attribute to process, it transforms the
 [hast](https://github.com/syntax-tree/hast) [`element`](https://github.com/syntax-tree/hast#element)
 nodes into an
-[`mdxJsxFlowElement`](https://github.com/syntax-tree/mdast-util-mdx-jsx#mdxjsxflowelementhast) node.
+[`mdxJsxTextElement`](https://github.com/syntax-tree/mdast-util-mdx-jsx#mdxjsxtextelementhast) node.
 This may prevent other rehype plugins from further processing. To avoid this, put
 `rehype-mdx-import-media` after any other rehype plugins
 
