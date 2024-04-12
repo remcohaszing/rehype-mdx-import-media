@@ -8,12 +8,10 @@ testFixturesDirectory<RehypeMdxImportMediaOptions>({
   prettier: true,
   tests: {
     'expected.jsx'(file, options) {
-      return String(
-        compileSync(file, {
-          rehypePlugins: [rehypeRaw, [rehypeMdxImportMedia, options]],
-          jsx: true
-        })
-      )
+      return compileSync(file, {
+        rehypePlugins: [rehypeRaw, [rehypeMdxImportMedia, options]],
+        jsx: true
+      })
     }
   }
 })
