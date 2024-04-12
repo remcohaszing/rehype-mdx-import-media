@@ -28,6 +28,30 @@ export interface RehypeMdxImportMediaOptions {
   elementAttributeNameCase?: 'html' | 'react'
 
   /**
+   * Where to keep URL hash.
+   *
+   * - `both`: Keep the URL hash on both the import source and the JSX prop.
+   * - `import`: Only keep the URL hash on the import source.
+   * - `jsx`: Only keep the URL hash on the JSX prop.
+   * - `none`: Remove the URL hash.
+   *
+   * @default 'import'
+   */
+  preserveHash?: 'both' | 'import' | 'jsx' | 'none'
+
+  /**
+   * Where to keep query parameters.
+   *
+   * - `both`: Keep the query parameters on both the import source and the JSX prop.
+   * - `import`: Only keep the query parameters on the import source.
+   * - `jsx`: Only keep the query parameters on the JSX prop.
+   * - `none`: Remove the query parameters.
+   *
+   * @default 'import'
+   */
+  preserveQuery?: 'both' | 'import' | 'jsx' | 'none'
+
+  /**
    * By default imports are resolved relative to the input file. This matches default markdown
    * behaviour. If this is set to false, this behaviour is removed and URLs are no longer processed.
    * This allows to import images from `node_modules`. If this is disabled, local images can still
@@ -57,6 +81,8 @@ export const defaultAttributes: Record<string, Iterable<string>> = {
 const rehypeMdxImportMedia: Plugin<[RehypeMdxImportMediaOptions?], Root> = ({
   attributes = defaultAttributes,
   elementAttributeNameCase,
+  preserveHash = 'import',
+  preserveQuery = 'import',
   resolve = true
 } = {}) => {
   const elementMap = new Map(
@@ -105,19 +131,45 @@ const rehypeMdxImportMedia: Plugin<[RehypeMdxImportMediaOptions?], Root> = ({
        * If the path should not be replaced, nothing is returned. If an identifier was already
        * calculated for this path, it is returned instead.
        *
-       * @param path
+       * @param importSource
        *   The path to get an identifier for.
        * @returns
        *   The matching identifier, or none.
        */
-      function getIdentifier(path: string): Identifier | undefined {
-        let value = path
+      function getIdentifier(importSource: string): [] | [Identifier, string] {
+        let value = importSource
         if (urlPattern.test(value)) {
-          return
+          return []
         }
 
         if (!relativePathPattern.test(value) && resolve) {
           value = `./${value}`
+        }
+
+        const hashIndex = value.indexOf('#')
+        const hash = hashIndex === -1 ? '' : value.slice(hashIndex)
+        const remainder = hashIndex === -1 ? value : value.slice(0, hashIndex)
+        const queryIndex = remainder.indexOf('?')
+        const query = queryIndex === -1 ? '' : remainder.slice(queryIndex)
+        value = queryIndex === -1 ? remainder : remainder.slice(0, queryIndex)
+        let propChunk = ''
+
+        if (preserveQuery === 'import') {
+          value += query
+        } else if (preserveQuery === 'jsx') {
+          propChunk += query
+        } else if (preserveQuery === 'both') {
+          value += query
+          propChunk += query
+        }
+
+        if (preserveHash === 'import') {
+          value += hash
+        } else if (preserveHash === 'jsx') {
+          propChunk += hash
+        } else if (preserveHash === 'both') {
+          value += hash
+          propChunk += hash
         }
 
         let name = imported.get(value)
@@ -134,7 +186,7 @@ const rehypeMdxImportMedia: Plugin<[RehypeMdxImportMediaOptions?], Root> = ({
         }
 
         shouldReplace = true
-        return { type: 'Identifier', name }
+        return [{ type: 'Identifier', name }, propChunk]
       }
 
       const replacements = propertiesToMdxJsxAttributes(node.properties, {
@@ -150,7 +202,24 @@ const rehypeMdxImportMedia: Plugin<[RehypeMdxImportMediaOptions?], Root> = ({
           }
 
           if (lower !== 'srcset') {
-            return getIdentifier(value) || value
+            const [identifier, extra] = getIdentifier(value)
+
+            if (!identifier) {
+              return value
+            }
+
+            if (extra) {
+              return {
+                type: 'TemplateLiteral',
+                expressions: [identifier],
+                quasis: [
+                  { type: 'TemplateElement', tail: false, value: { raw: '' } },
+                  { type: 'TemplateElement', tail: true, value: { raw: extra } }
+                ]
+              }
+            }
+
+            return identifier
           }
 
           const srcset = parseSrcset(value)
@@ -159,12 +228,12 @@ const rehypeMdxImportMedia: Plugin<[RehypeMdxImportMediaOptions?], Root> = ({
           let raw = ''
 
           for (const [srcIndex, src] of srcset.entries()) {
-            const identifier = getIdentifier(src.url)
+            const [identifier, extra] = getIdentifier(src.url)
 
             if (identifier) {
               quasis.push({ type: 'TemplateElement', tail: false, value: { raw } })
               expressions.push(identifier)
-              raw = ''
+              raw = extra!
             } else {
               raw += src.url
             }
