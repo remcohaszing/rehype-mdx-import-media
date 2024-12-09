@@ -33,7 +33,7 @@ You may want to author images in MDX using the markdown format, like so:
 ![alt](./image.png 'title')
 ```
 
-You may use MDX with a bundler such as [Webpack](https://webpack.js.org) or
+You may use MDX with a bundler such as [webpack](https://webpack.js.org) or
 [Vite](http://vitejs.dev). By default bundlers don’t understand how to resolve those images. They
 only understand how to resolve imports. This plugin solves that problem.
 
