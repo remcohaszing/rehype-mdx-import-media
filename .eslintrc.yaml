@@ -4,3 +4,7 @@ extends:
 rules:
   no-param-reassign: off
   import/no-extraneous-dependencies: off
+overrides:
+  - files: ['*.md/*']
+    rules:
+      capitalized-comments: off

@@ -13,7 +13,9 @@ paths into imports.
 - [Installation](#installation)
 - [When should I use this?](#when-should-i-use-this)
 - [Usage](#usage)
-- [Example](#example)
+- [Examples](#examples)
+  - [Script](#script)
+  - [Next.js](#nextjs)
 - [API](#api)
   - [Options](#options)
 - [Compatibility](#compatibility)
@@ -58,7 +60,9 @@ nodes into an
 This may prevent other rehype plugins from further processing. To avoid this, put
 `rehype-mdx-import-media` after any other rehype plugins
 
-## Example
+## Examples
+
+### Script
 
 Let’s say we have a file named `example.mdx` with the following contents:
 
@@ -91,6 +95,41 @@ export default function MDXContent() {
       <img alt="" src={_rehypeMdxImportMedia0} />
     </p>
   )
+}
+```
+
+### Next.js
+
+If you use this with Next.js, you must combine it with
+[`next/image`](https://nextjs.org/docs/pages/api-reference/components/image).
+
+```ts
+// next.config.ts
+import createMDX from '@next/mdx'
+
+const withMDX = createMDX({
+  options: {
+    rehypePlugins: [['rehype-mdx-import-media']]
+  }
+})
+
+export default withMDX()
+```
+
+```ts
+// mdx-components.ts
+import Image from 'next/image'
+
+const components = {
+  img: Image
+}
+
+declare global {
+  type MDXProvidedComponents = typeof components
+}
+
+export function useMDXComponents(): MDXProvidedComponents {
+  return components
 }
 ```
 
