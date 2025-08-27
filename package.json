@@ -12,7 +12,7 @@
   "scripts": {
     "prepack": "tsc --build",
     "pretest": "tsc --build",
-    "test": "c8 node --enable-source-maps --test"
+    "test": "c8 node --enable-source-maps --test dist/*.test.js"
   },
   "author": "Remco Haszing <remcohaszing@gmail.com>",
   "license": "MIT",
