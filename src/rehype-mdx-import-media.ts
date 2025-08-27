@@ -1,13 +1,9 @@
-import {
-  type Expression,
-  type Identifier,
-  type ImportDeclaration,
-  type TemplateElement
-} from 'estree'
-import { type Root } from 'hast'
+import type { Expression, Identifier, ImportDeclaration, TemplateElement } from 'estree'
+import type { Root } from 'hast'
+import type { Plugin } from 'unified'
+
 import { propertiesToMdxJsxAttributes } from 'hast-util-properties-to-mdx-jsx-attributes'
 import parseSrcset from 'parse-srcset'
-import { type Plugin } from 'unified'
 import { visit } from 'unist-util-visit'
 
 export interface RehypeMdxImportMediaOptions {
@@ -179,6 +175,7 @@ const rehypeMdxImportMedia: Plugin<[RehypeMdxImportMediaOptions?], Root> = ({
 
           imports.push({
             type: 'ImportDeclaration',
+            attributes: [],
             source: { type: 'Literal', value },
             specifiers: [{ type: 'ImportDefaultSpecifier', local: { type: 'Identifier', name } }]
           })

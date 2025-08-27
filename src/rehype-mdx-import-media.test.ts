@@ -1,5 +1,7 @@
+import type { RehypeMdxImportMediaOptions } from 'rehype-mdx-import-media'
+
 import { compileSync } from '@mdx-js/mdx'
-import rehypeMdxImportMedia, { type RehypeMdxImportMediaOptions } from 'rehype-mdx-import-media'
+import rehypeMdxImportMedia from 'rehype-mdx-import-media'
 import rehypeRaw from 'rehype-raw'
 import { testFixturesDirectory } from 'snapshot-fixtures'
 
