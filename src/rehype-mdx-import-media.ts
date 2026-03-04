@@ -24,6 +24,17 @@ export interface RehypeMdxImportMediaOptions {
   elementAttributeNameCase?: 'html' | 'react'
 
   /**
+   * If specified, the URL is matched against this property. If it matches, the URL is not
+   * tranformed.
+   *
+   * The URL matches if:
+   * - This is an array, and the URL is in the array;
+   * - This is a regular expression, and the URL matches the regular expression; or
+   * - This is a function, and it returns true when called with the URL.
+   */
+  ignore?: ((url: string) => boolean) | RegExp | string[]
+
+  /**
    * Where to keep URL hash.
    *
    * - `both`: Keep the URL hash on both the import source and the JSX prop.
@@ -77,6 +88,7 @@ export const defaultAttributes: Record<string, Iterable<string>> = {
 const rehypeMdxImportMedia: Plugin<[RehypeMdxImportMediaOptions?], Root> = ({
   attributes = defaultAttributes,
   elementAttributeNameCase,
+  ignore,
   preserveHash = 'import',
   preserveQuery = 'import',
   resolve = true
@@ -135,6 +147,18 @@ const rehypeMdxImportMedia: Plugin<[RehypeMdxImportMediaOptions?], Root> = ({
       function getIdentifier(importSource: string): [] | [Identifier, string] {
         let value = importSource
         if (urlPattern.test(value)) {
+          return []
+        }
+
+        if (Array.isArray(ignore) && ignore.includes(importSource)) {
+          return []
+        }
+
+        if (ignore instanceof RegExp && ignore.test(importSource)) {
+          return []
+        }
+
+        if (typeof ignore === 'function' && ignore(importSource)) {
           return []
         }
 

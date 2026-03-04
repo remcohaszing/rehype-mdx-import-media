@@ -153,6 +153,11 @@ The default export is a [rehype](https://github.com/rehypejs/rehype) plugin.
   - [`video[src]`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video#src)
 - `elementAttributeNameCase` (`'html' | 'react'`): The casing to use for attribute names. This
   should match the elementAttributeNameCase value passed to MDX. (Default: `'react'`)
+- `ignore`: (`Function | RegExp | string[]`): If specified, the URL is matched against this
+  property. If it matches, the URL is not tranformed. The URL matches if:
+  - This is an array, and the URL is in the array;
+  - This is a regular expression, and the URL matches the regular expression; or
+  - This is a function, and it returns true when called with the URL.
 - `preserveHash` (`'both' | 'import' | 'jsx' | 'none'`): Where to keep URL hash. (Default:
   `'import'`)
   - `both`: Keep the URL hash on both the import source and the JSX prop.
