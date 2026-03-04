@@ -11,7 +11,7 @@ export interface RehypeMdxImportMediaOptions {
    * HTML element attributes that should be processed. The key is the HTML element tag name. The
    * value is a list of attribute names to process. The default value is {@link defaultAttributes}
    */
-  attributes?: Record<string, Iterable<string>>
+  attributes?: Record<string, Iterable<string>> | undefined
 
   /**
    * The casing to use for attribute names.
@@ -21,7 +21,7 @@ export interface RehypeMdxImportMediaOptions {
    * @default 'react'
    * @see https://mdxjs.com/packages/mdx/#processoroptions
    */
-  elementAttributeNameCase?: 'html' | 'react'
+  elementAttributeNameCase?: 'html' | 'react' | undefined
 
   /**
    * If specified, the URL is matched against this property. If it matches, the URL is not
@@ -32,7 +32,7 @@ export interface RehypeMdxImportMediaOptions {
    * - This is a regular expression, and the URL matches the regular expression; or
    * - This is a function, and it returns true when called with the URL.
    */
-  ignore?: ((url: string) => boolean) | RegExp | string[]
+  ignore?: ((url: string) => boolean) | RegExp | string[] | undefined
 
   /**
    * Where to keep URL hash.
@@ -44,7 +44,7 @@ export interface RehypeMdxImportMediaOptions {
    *
    * @default 'import'
    */
-  preserveHash?: 'both' | 'import' | 'jsx' | 'none'
+  preserveHash?: 'both' | 'import' | 'jsx' | 'none' | undefined
 
   /**
    * Where to keep query parameters.
@@ -56,7 +56,7 @@ export interface RehypeMdxImportMediaOptions {
    *
    * @default 'import'
    */
-  preserveQuery?: 'both' | 'import' | 'jsx' | 'none'
+  preserveQuery?: 'both' | 'import' | 'jsx' | 'none' | undefined
 
   /**
    * By default imports are resolved relative to the input file. This matches default markdown
@@ -66,7 +66,7 @@ export interface RehypeMdxImportMediaOptions {
    *
    * @default true
    */
-  resolve?: boolean
+  resolve?: boolean | undefined
 }
 
 const urlPattern = /^(https?:)?\//
