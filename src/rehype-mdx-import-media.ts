@@ -1,5 +1,6 @@
 import type { Expression, Identifier, ImportDeclaration, TemplateElement } from 'estree'
 import type { Root } from 'hast'
+import type { MdxJsxAttribute } from 'mdast-util-mdx-jsx'
 import type { Plugin } from 'unified'
 
 import { propertiesToMdxJsxAttributes } from 'hast-util-properties-to-mdx-jsx-attributes'
@@ -53,10 +54,11 @@ export interface RehypeMdxImportMediaOptions {
    * - `import`: Only keep the query parameters on the import source.
    * - `jsx`: Only keep the query parameters on the JSX prop.
    * - `none`: Remove the query parameters.
+   * - `props`: Turn the query parameters into props of the element.
    *
    * @default 'import'
    */
-  preserveQuery?: 'both' | 'import' | 'jsx' | 'none' | undefined
+  preserveQuery?: 'both' | 'import' | 'jsx' | 'none' | 'props' | undefined
 
   /**
    * By default imports are resolved relative to the input file. This matches default markdown
@@ -132,6 +134,7 @@ const rehypeMdxImportMedia: Plugin<[RehypeMdxImportMediaOptions?], Root> = ({
       }
 
       shouldReplace = false
+      const extraAttributes: MdxJsxAttribute[] = []
 
       /**
        * Generate an identifier node for an import path.
@@ -141,10 +144,13 @@ const rehypeMdxImportMedia: Plugin<[RehypeMdxImportMediaOptions?], Root> = ({
        *
        * @param importSource
        *   The path to get an identifier for.
+       * @param isSrcSet
+       *   Whether or not this is in the context of a `srcset` attribute. In that case, query
+       *   parameters won’t be translated to props.
        * @returns
        *   The matching identifier, or none.
        */
-      function getIdentifier(importSource: string): [] | [Identifier, string] {
+      function getIdentifier(importSource: string, isSrcSet?: boolean): [] | [Identifier, string] {
         let value = importSource
         if (urlPattern.test(value)) {
           return []
@@ -181,6 +187,40 @@ const rehypeMdxImportMedia: Plugin<[RehypeMdxImportMediaOptions?], Root> = ({
         } else if (preserveQuery === 'both') {
           value += query
           propChunk += query
+        } else if (!isSrcSet && preserveQuery === 'props') {
+          const params = new URLSearchParams(query)
+          for (const key of new Set(params.keys())) {
+            const values = params.getAll(key)
+            extraAttributes.push({
+              type: 'mdxJsxAttribute',
+              name: key,
+              value:
+                values.length === 1
+                  ? values[0]
+                  : {
+                      type: 'mdxJsxAttributeValueExpression',
+                      value: '',
+                      data: {
+                        estree: {
+                          type: 'Program',
+                          sourceType: 'module',
+                          body: [
+                            {
+                              type: 'ExpressionStatement',
+                              expression: {
+                                type: 'ArrayExpression',
+                                elements: values.map<Expression>((val) => ({
+                                  type: 'Literal',
+                                  value: val
+                                }))
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+            })
+          }
         }
 
         if (preserveHash === 'import') {
@@ -249,7 +289,7 @@ const rehypeMdxImportMedia: Plugin<[RehypeMdxImportMediaOptions?], Root> = ({
           let raw = ''
 
           for (const [srcIndex, src] of srcset.entries()) {
-            const [identifier, extra] = getIdentifier(src.url)
+            const [identifier, extra] = getIdentifier(src.url, true)
 
             if (identifier) {
               quasis.push({ type: 'TemplateElement', tail: false, value: { raw } })
@@ -284,6 +324,7 @@ const rehypeMdxImportMedia: Plugin<[RehypeMdxImportMediaOptions?], Root> = ({
           return { type: 'TemplateLiteral', expressions, quasis }
         }
       })
+      replacements.push(...extraAttributes)
 
       if (shouldReplace) {
         parent!.children[index!] = {

@@ -170,6 +170,7 @@ The default export is a [rehype](https://github.com/rehypejs/rehype) plugin.
   - `import`: Only keep the query parameters on the import source.
   - `jsx`: Only keep the query parameters on the JSX prop.
   - `none`: Remove the query parameters.
+  - `props`: Turn the query parameters into props of the element.
 - `resolve` (`boolean`): By default imports are resolved relative to the markdown file. This matches
   behaviour of places that render the markdown, such as GitHub. If this is set to false, this
   behaviour is removed and URLs are no longer processed. This allows to import images from
